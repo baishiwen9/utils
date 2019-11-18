@@ -1,0 +1,21 @@
+{
+  "name": "utils",
+  "version": "1.0.7",
+  "description": "经常能用到的前端方法集合",
+  "main": "./dist/utils.min.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "babel": "^6.23.0",
+    "babel-loader": "^8.0.4",
+    "lodash": "^4.17.11",
+    "tocmd": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "baishiwen",
+  "license": "ISC"
+}
