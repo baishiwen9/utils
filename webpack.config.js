@@ -5,8 +5,8 @@ const configMonitor = {
   entry: './src/index.js',  
   output: {
     path: __dirname + '/dist',   
-    filename: 'utils.js',       
-    library: 'utils',
+    filename: 'Utils.js',       
+    library: 'Utils',
     libraryTarget: 'umd',
     libraryExport: 'default',
     umdNamedDefine: true,
