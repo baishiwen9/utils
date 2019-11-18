@@ -1,0 +1,30 @@
+{
+  "id": "1507257",
+  "name": "wetime-h5",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "11757759",
+      "name": "copy",
+      "font_class": "copy",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "11808208",
+      "name": "double right",
+      "font_class": "doubleright",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "11835030",
+      "name": "heart-fill",
+      "font_class": "heart-fill",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    }
+  ]
+}
