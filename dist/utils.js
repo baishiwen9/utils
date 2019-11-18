@@ -607,6 +607,57 @@ function equal(v1, v2) {
 
 /***/ }),
 
+/***/ "./src/debug.js":
+/*!**********************!*\
+  !*** ./src/debug.js ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * 开启测试模式的方法，开启后可打开VConsole
+ */
+function open() {
+  if (window.location.hostname.indexOf('dev') !== -1 || window.location.hostname.indexOf('localhost') !== -1 || window.location.hostname.indexOf('test') !== -1 || window.location.protocol === 'file:') {
+    loadjs('https://cdn.bootcss.com/vConsole/3.3.4/vconsole.min.js', function () {
+      if (window.VConsole) {
+        new window.VConsole();
+      }
+    });
+  }
+}
+
+function close() {
+  var vconsole = document.querySelector('#__vconsole');
+  vconsole && vconsole.remove();
+} // 加载js脚本
+
+
+var loadjs = function loadjs(url, success, fail) {
+  var script = document.createElement('script');
+
+  script.onload = function () {
+    success && typeof success === 'function' && success();
+  };
+
+  script.onerror = function () {
+    fail && typeof fail === 'function' && fail();
+  };
+
+  script.async = true;
+  script.src = url;
+  document.getElementsByTagName('head')[0].appendChild(script);
+};
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  open: open,
+  close: close
+});
+
+/***/ }),
+
 /***/ "./src/h5.js":
 /*!*******************!*\
   !*** ./src/h5.js ***!
@@ -734,13 +785,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _compareVersion__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./compareVersion */ "./src/compareVersion.js");
 /* harmony import */ var _h5__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./h5 */ "./src/h5.js");
 /* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common */ "./src/common.js");
+/* harmony import */ var _debug__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./debug */ "./src/debug.js");
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   Version: _compareVersion__WEBPACK_IMPORTED_MODULE_0__["default"],
   H5: _h5__WEBPACK_IMPORTED_MODULE_1__["default"],
-  Common: _common__WEBPACK_IMPORTED_MODULE_2__["default"]
+  Common: _common__WEBPACK_IMPORTED_MODULE_2__["default"],
+  Debug: _debug__WEBPACK_IMPORTED_MODULE_3__["default"]
 });
 
 /***/ })
