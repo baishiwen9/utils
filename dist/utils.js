@@ -550,59 +550,92 @@ function getCurMonthDays() {
 
 /***/ }),
 
-/***/ "./src/compareVersion.js":
-/*!*******************************!*\
-  !*** ./src/compareVersion.js ***!
-  \*******************************/
+/***/ "./src/cookies.js":
+/*!************************!*\
+  !*** ./src/cookies.js ***!
+  \************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/*
+* 对cookies进行封装，使用更方便
+*/
+
 /**
- * compareVersion 是用来比较两个版本号的方法
+ * cookies简介：
+ * 存储cookie是浏览器提供的功能。cookie 其实是存储在浏览器中的纯文本，浏览器的安装目录下会专门有一个 cookie 文件夹来存放各个域下设置的cookie。
+ * 每个域名下的cookie 的大小最大为4KB，每个域名下的cookie数量最多为20个
+ * JS 原生的 API提供了获取cookie的方法：document.cookie（这个方法只能获取非HttpOnly类型的cookie）
  * 
  */
 
 /**
- * 比较大
+ * cookies属性简介：
+ *  expires：设置“cookie什么时间内有效”。expires其实是cookie失效日期，expires必须是 GMT 格式的时间（可以通过new Date().toGMTString()或者 new Date().toUTCString() 来获得）
+ *  domain： 域名， domain的默认值为设置该cookie的网页所在的域名
+ *  path： 路径， path默认值为设置该cookie的网页所在的目录
+ *  所以domain和path两个选项共同决定了cookie何时被浏览器自动添加到请求头部中发送出去。
+ *  secure：用来设置cookie只在确保安全的请求中才会发送。当请求是HTTPS或者其他安全协议时，包含 secure 选项的 cookie才能被发送至服务器。
+ *  HttpOnly： 用来设置cookie是否能通过 js 去访问
+ * 在设置这些属性时，属性之间由一个分号和一个空格隔开。
  */
-function greater(v1, v2) {
-  if (v1 > v2) {
-    return true;
-  }
 
-  return false;
-}
 /**
- * 比较小
+ * 正则解读：
+ * (^| ) ：表示是字符串开头或者空格
+ * ([^;]*)：其中[^;]表示除开";"之外的其它字符([^;]*)表示0到多个";"之外的字符
+ * (;|\x24)：表示以";"或者"\x24"作为匹配结束。
  */
+function getRaw(key) {
+  var reg = new RegExp("(^| )" + key + "=([^;]*)(;|\x24)"),
+      result = reg.exec(document.cookie);
 
-
-function smaller(v1, v2) {
-  if (v1 < v2) {
-    return true;
+  if (result) {
+    return result[2] || null;
   }
 
-  return false;
+  return null;
 }
-/**
- * 相等
- */
 
+function setRaw(key, value, options) {
+  options = options || {};
+  var expires = options.expires;
 
-function equal(v1, v2) {
-  if (v1 === v2) {
-    return true;
+  if ('number' == typeof options.expires) {
+    expires = new Date();
+    expires.setTime(expires.getTime() + options.expires);
   }
 
-  return false;
+  document.cookie = key + "=" + value + (options.path ? "; path=" + options.path : "") + (expires ? "; expires=" + expires.toGMTString() : "") + (options.domain ? "; domain=" + options.domain : "") + (options.secure ? "; secure" : '');
+}
+
+function set(key, value, options) {
+  setRaw(key, encodeURIComponent(value), options);
+}
+
+function get(key) {
+  var value = getRaw(key);
+
+  if ('string' == typeof value) {
+    value = decodeURIComponent(value);
+    return value;
+  }
+
+  return null;
+}
+
+function remove(key, options) {
+  options = options || {};
+  options.expires = new Date(0);
+  setRaw(key, '', options);
 }
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  greater: greater,
-  smaller: smaller,
-  equal: equal
+  set: set,
+  get: get,
+  remove: remove
 });
 
 /***/ }),
@@ -757,7 +790,7 @@ function getWindowHeight() {
   return windowHeight;
 }
 
-function onReachBottom(callback, dom, offset) {
+function onReachBottom(dom, callback, offset) {
   var node = dom ? dom : window;
   offset = offset ? offset : 0;
 
@@ -807,7 +840,7 @@ var iconSVG = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-
 function initIcon(x, y) {
   var div = document.createElement('div');
   div.classList.add('icon-heart');
-  var id = 'dom_' + getId();
+  var id = 'heart_' + getId();
   div.id = id;
   div = addStyle(div, x, y);
   var wrap = document.createElement('div');
@@ -817,7 +850,8 @@ function initIcon(x, y) {
   document.body.appendChild(div);
   addCss();
   clearDom(id);
-}
+} //随机生成一个id，时间戳防止id重复
+
 
 function getId() {
   return Math.random().toString(36).slice(2) + new Date().getTime();
@@ -872,7 +906,7 @@ function stop() {
 
 function restart() {
   config.canClick = true;
-} //定时清除多余dom，防止由于dom过多导致浏览器奔溃
+} //定时清除多余dom，防止由于dom过多导致浏览器崩溃
 
 
 function clearDom(id) {
@@ -899,22 +933,756 @@ function clearDom(id) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _compareVersion__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./compareVersion */ "./src/compareVersion.js");
+/* harmony import */ var _version__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./version */ "./src/version.js");
 /* harmony import */ var _h5__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./h5 */ "./src/h5.js");
 /* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common */ "./src/common.js");
 /* harmony import */ var _debug__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./debug */ "./src/debug.js");
 /* harmony import */ var _heart__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./heart */ "./src/heart.js");
+/* harmony import */ var _waterFull__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./waterFull */ "./src/waterFull.js");
+/* harmony import */ var _localStorage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./localStorage */ "./src/localStorage.js");
+/* harmony import */ var _mini_performance__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./mini-performance */ "./src/mini-performance.js");
+/* harmony import */ var _cookies__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./cookies */ "./src/cookies.js");
+/* harmony import */ var _indexedDB__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./indexedDB */ "./src/indexedDB.js");
+
+
+
+
+
 
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  Version: _compareVersion__WEBPACK_IMPORTED_MODULE_0__["default"],
+  Version: _version__WEBPACK_IMPORTED_MODULE_0__["default"],
   H5: _h5__WEBPACK_IMPORTED_MODULE_1__["default"],
   Common: _common__WEBPACK_IMPORTED_MODULE_2__["default"],
   Debug: _debug__WEBPACK_IMPORTED_MODULE_3__["default"],
-  Heart: _heart__WEBPACK_IMPORTED_MODULE_4__["default"]
+  Heart: _heart__WEBPACK_IMPORTED_MODULE_4__["default"],
+  WaterFull: _waterFull__WEBPACK_IMPORTED_MODULE_5__["default"],
+  LocalStorage: _localStorage__WEBPACK_IMPORTED_MODULE_6__["default"],
+  MiniAppPerformance: _mini_performance__WEBPACK_IMPORTED_MODULE_7__["default"],
+  Cookies: _cookies__WEBPACK_IMPORTED_MODULE_8__["default"],
+  IndexedDB: _indexedDB__WEBPACK_IMPORTED_MODULE_9__["default"]
+});
+
+/***/ }),
+
+/***/ "./src/indexedDB.js":
+/*!**************************!*\
+  !*** ./src/indexedDB.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/*
+* 对indexedDB进行封装，使用更方便
+*/
+
+/**
+ * indexedDB简介：
+ *  IndexedDB 就是浏览器提供的本地数据库，它可以被网页脚本创建和操作。IndexedDB 允许储存大量数据，提供查找接口，还能建立索引。
+ *  
+ * IndexedDB 具有以下特点：
+ *  1. 键值对储存， IndexedDB 内部采用对象仓库（object store）存放数据。所有类型的数据都可以直接存入，包括 JavaScript 对象。对象仓库中，数据以"键值对"的形式保存，每一个数据记录都有对应的主键，主键是独一无二的，不能有重复，否则会抛出一个错误。
+ *  2. 异步，IndexedDB 操作时不会锁死浏览器，用户依然可以进行其他操作，异步设计是为了防止大量数据的读写，拖慢网页的表现
+ *  3. 支持事务， IndexedDB 支持事务（transaction），这意味着一系列操作步骤之中，只要有一步失败，整个事务就都取消，数据库回滚到事务发生之前的状态，不存在只改写一部分数据的情况。
+ *  4. 同源限制，IndexedDB 受到同源限制，每一个数据库对应创建它的域名。网页只能访问自身域名下的数据库，而不能访问跨域的数据库。
+ *  5. 储存空间大，IndexedDB 的储存空间比 LocalStorage 大得多，一般来说不少于 250MB，甚至没有上限。
+ *  6. 支持二进制储存， IndexedDB 不仅可以储存字符串，还可以储存二进制数据（ArrayBuffer 对象和 Blob 对象）。
+ */
+var createIndexedDB = function createIndexedDB(config) {
+  var databaseName = config.databaseName,
+      version = config.version,
+      success = config.success;
+  var request = window.indexedDB.open(databaseName, version);
+  var db = '';
+
+  request.onerror = function (e) {
+    console.log('数据库打开失败');
+    config.fail && config.fail({
+      msg: '数据库打开失败',
+      e: e
+    });
+  };
+
+  request.onsuccess = function (e) {
+    console.log('数据库打开成功');
+    db = request.result;
+    success && success();
+  };
+
+  var objectStore = null;
+
+  request.onupgradeneeded = function (event) {
+    db = event.target.result;
+    var table_header = config.table_header,
+        table_name = config.table_name,
+        main_key = config.main_key;
+
+    if (!db.objectStoreNames.contains(table_name)) {
+      objectStore = db.createObjectStore(table_name, {
+        keyPath: main_key,
+        autoIncrement: true
+      });
+
+      if (table_header && Object.prototype.toString.call(table_header) === '[object Array]') {
+        table_header.length > 0 && table_header.map(function (item) {
+          objectStore.createIndex(item.key, item.key, {
+            unique: item.unique ? item.unique : false
+          });
+        });
+      }
+    }
+  }; //获取所有数据
+
+
+  var getAll = function getAll(table_name, success, fail) {
+    var objectStore = db.transaction(table_name).objectStore(table_name);
+    var result = [];
+
+    objectStore.openCursor().onsuccess = function (event) {
+      var cursor = event.target.result;
+
+      if (cursor) {
+        result.push(cursor.value);
+        cursor["continue"]();
+      } else {
+        console.log('没有更多数据了！');
+        success && success(result);
+      }
+    };
+
+    objectStore.openCursor().onerror = function (event) {
+      fail && fail(event);
+    };
+  };
+
+  return {
+    /**
+     * options
+     *      table_name: 表名， string
+     *      data：要添加的数据, array
+     *      callback： 回调函数，成功返回的code为1，其他返回的code为-1， function
+     */
+    add: function add(options) {
+      var data = options.data,
+          table_name = options.table_name,
+          callback = options.callback;
+
+      if (!table_name || !data) {
+        callback && callback({
+          code: -1,
+          msg: 'table_name或data不能为空'
+        });
+        return;
+      }
+
+      var transaction = db.transaction([table_name], 'readwrite');
+      var store = transaction.objectStore(table_name);
+      var _request = null;
+
+      if (Object.prototype.toString.call(data) === '[object Array]') {
+        data.length > 0 && data.map(function (item) {
+          _request = store.add(item);
+        });
+      }
+
+      _request.onsuccess = function (event) {
+        console.log('数据写入成功');
+        callback && callback({
+          code: 1,
+          e: event
+        });
+      };
+
+      _request.onerror = function (event) {
+        console.log('数据写入失败');
+        callback && callback({
+          code: -1,
+          e: event
+        });
+      };
+    },
+
+    /**
+     * options
+     *      table_name: 表名
+     *      index_key: 索引
+     *      index_value: 索引值
+     *      callback： 回调函数，成功返回的code为1，其他返回的code为-1
+     */
+    get: function get(options) {
+      var table_name = options.table_name,
+          callback = options.callback,
+          index_key = options.index_key,
+          index_value = options.index_value;
+
+      if (!table_name) {
+        callback && callback({
+          code: -1,
+          msg: 'table_name不能为空'
+        });
+        return;
+      }
+
+      getAll(table_name, function (res) {
+        if (res && res.length > 0) {
+          var result = [];
+
+          if (index_value) {
+            result = res.filter(function (item) {
+              return item[index_key] === index_value;
+            });
+          } else {
+            result = res;
+          }
+
+          callback && callback({
+            code: 1,
+            data: result
+          });
+        } else {
+          callback && callback({
+            code: 1,
+            data: []
+          });
+        }
+      }, function (err) {
+        callback && callback({
+          code: -1,
+          e: err
+        });
+      }); // const transaction = db.transaction([table_name]);
+      // const objectStore = transaction.objectStore(table_name);
+      // let request = null;
+      // if (index_key === objectStore.keyPath) {
+      //     request = objectStore.get(index_value);
+      // } else {
+      //     const index = objectStore.index(index_key);//获取索引
+      //     request = index.get(index_value);
+      // }
+      // request.onerror = function(event) {
+      //     console.log('获取数据失败');
+      //     callback && callback({
+      //         code: -1,
+      //         e: event,
+      //     });
+      // };
+      // request.onsuccess = function( event) {
+      //     console.log('获取数据成功');
+      //     if (request.result) {
+      //         console.log('获取数据成功：有数据');
+      //         callback && callback({
+      //             code: 1,
+      //             e: event,
+      //             data: request.result
+      //         });
+      //     } else {
+      //         console.log('获取数据成功：无数据');
+      //         callback && callback({
+      //             code: 1,
+      //             e: event,
+      //             data: {}
+      //         });
+      //     }
+      // };
+    },
+
+    /**
+     * options
+     *      table_name: 表名
+     *      data: 要更新的数据
+     *      callback： 回调函数，成功返回的code为1，其他返回的code为-1
+     */
+    update: function update(options) {
+      var table_name = options.table_name,
+          data = options.data,
+          callback = options.callback;
+
+      if (!table_name || !data) {
+        callback && callback({
+          code: -1,
+          msg: 'table_name或data不能为空'
+        });
+        return;
+      }
+
+      var transaction = db.transaction([table_name], 'readwrite');
+      var objectStore = transaction.objectStore(table_name);
+      var request = null;
+
+      if (Object.prototype.toString.call(data) === '[object Array]') {
+        data.length > 0 && data.map(function (item) {
+          request = objectStore.put(item);
+        });
+      }
+
+      request.onsuccess = function (event) {
+        console.log('数据更新成功');
+        callback && callback({
+          code: 1,
+          data: data,
+          e: event
+        });
+      };
+
+      request.onerror = function (event) {
+        console.log('数据更新失败');
+        callback && callback({
+          code: -1,
+          e: event
+        });
+      };
+    },
+
+    /**
+     * options
+     *      table_name: 表名
+     *      id： 要删除数据的id
+     *      callback： 回调函数，成功返回的code为1，其他返回的code为-1
+     */
+    "delete": function _delete(options) {
+      var table_name = options.table_name,
+          ids = options.ids,
+          callback = options.callback;
+
+      if (!table_name || !ids) {
+        callback && callback({
+          code: -1,
+          msg: 'table_name或id不能为空'
+        });
+        return;
+      }
+
+      var transaction = db.transaction([table_name], 'readwrite');
+      var objectStore = transaction.objectStore(table_name);
+      var request = null;
+
+      if (ids && Object.prototype.toString.call(ids) === '[object Array]') {
+        ids.length > 0 && ids.map(function (item) {
+          request = objectStore["delete"](item);
+        });
+      } else {
+        request = objectStore["delete"](ids);
+      }
+
+      request.onsuccess = function (event) {
+        console.log('数据删除成功');
+        callback && callback({
+          code: 1,
+          e: event
+        });
+      };
+
+      request.onerror = function (event) {
+        console.log('数据删除失败');
+        callback && callback({
+          code: -1,
+          e: event
+        });
+      };
+    },
+    clear: function clear(table_name) {
+      var transaction = db.transaction(table_name, 'readwrite');
+      var store = transaction.objectStore(table_name);
+      store.clear();
+    },
+    remove: function remove(table_name) {
+      var transaction = db.transaction(table_name, 'versionchange');
+      db.deleteObjectStore(table_name);
+    }
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  createIndexedDB: createIndexedDB
+});
+
+/***/ }),
+
+/***/ "./src/localStorage.js":
+/*!*****************************!*\
+  !*** ./src/localStorage.js ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/*
+* 对localStorage进行封装，使用更方便
+*/
+function set(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    return null;
+  }
+}
+
+function get(key) {
+  try {
+    var value = window.localStorage.getItem(key);
+
+    if (value) {
+      return JSON.parse(value);
+    }
+
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function remove(key) {
+  window.localStorage.removeItem(key);
+  return true;
+}
+
+function clear() {
+  window.localStorage.clear();
+  return true;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  set: set,
+  get: get,
+  remove: remove,
+  clear: clear
+});
+
+/***/ }),
+
+/***/ "./src/mini-performance.js":
+/*!*********************************!*\
+  !*** ./src/mini-performance.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * 小程序性能监控方法，主要监控小程序的启动时间，白屏时间，首屏时间
+ * 
+ */
+
+/**
+ * SDK 公共信息
+ *    sv: 版本号
+ *    baseUrl: 上报数据的url
+ */
+var SDK_config = {
+  sv: '1.0.0',
+  baseUrl: 'https://xxx.xxxxx.com/performance.gif'
+};
+/**
+ * 用来存储性能的所有信息的obj
+ */
+
+var performanceObj = {};
+/**
+ * 获取公共信息
+ */
+
+var getCommonInfo = function getCommonInfo(options) {
+  var wxInfo, network, commonInfo;
+  return regeneratorRuntime.async(function getCommonInfo$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          wxInfo = wx.getSystemInfoSync();
+          _context.next = 3;
+          return regeneratorRuntime.awrap(getNetworkType());
+
+        case 3:
+          network = _context.sent;
+          commonInfo = {
+            ts: new Date().getTime(),
+            //时间戳
+            sv: SDK_config.sv,
+            //该SDK的版本号
+            nt: network,
+            //网络类型
+            os: wxInfo.platform,
+            //操作系统，ios，android
+            dm: wxInfo.brand + '-' + wxInfo.model,
+            //机型
+            wv: wxInfo.version,
+            //微信版本号
+            sdkv: wxInfo.SDKVersion,
+            //基础库SDK版本号
+            ov: wxInfo.system,
+            //操作系统版本号
+            appid: '',
+            //项目id
+            type: 'miniApp' //小程序标志
+
+          };
+          Object.assign(performanceObj, commonInfo, options);
+
+        case 6:
+        case "end":
+          return _context.stop();
+      }
+    }
+  });
+};
+/**
+ * 获取网络状态
+ */
+
+
+var getNetworkType = function getNetworkType() {
+  return new Promise(function (resolve, reject) {
+    wx.getNetworkType({
+      success: function success(_ref) {
+        var networkType = _ref.networkType;
+        resolve(networkType);
+      },
+      fail: function fail() {
+        reject('unknown');
+      }
+    });
+  });
+};
+/**
+ * 初始化
+ * @param {*} options 
+ */
+
+
+var init = function init(options) {
+  if (options && Object.prototype.toString.call(options) === "[object Object]") {
+    getCommonInfo(options);
+  }
+};
+/**
+ * 计时开始
+ * @param {*} pi 当前页面的id
+ */
+
+
+var start = function start(pi) {
+  if (!pi || Object.prototype.toString.call(pi) !== '[object String]') {
+    throw Error('pi不能为空&pi只能为字符串');
+  }
+
+  Object.assign(performanceObj, {
+    startTime: new Date().getTime(),
+    pi: pi
+  });
+};
+/**
+ * 统计时间并且发送请求上报
+ * @param {*} type 计时的类型，分为：启动时间，白屏时间，首屏时间 
+ */
+//每个页面只发送一次请求，所以会等到首屏时间统计完成后一起发送
+
+
+var send = function send(type) {
+  var endTime = new Date().getTime();
+  var diffTime = endTime - performanceObj.startTime;
+  var isSend = false; //启动时间
+
+  if (!type || type == 0 || type === 'st') {
+    performanceObj.st = diffTime;
+    isSend = true;
+  } //白屏时间
+
+
+  if (type === 'frt' || type == 1) {
+    performanceObj.frt = diffTime;
+    isSend = false;
+  } //首屏时间
+
+
+  if (type === 'fst' || type == 2) {
+    performanceObj.fst = diffTime;
+    isSend = true;
+  } //上报数据
+
+
+  if (isSend) {
+    delete performanceObj.startTime;
+    console.log('性能监控上报的数据: ', performanceObj);
+    imgLog(SDK_config.baseUrl, performanceObj);
+  }
+};
+/**
+ * 格式化参数
+ * @param {*} dataObj 
+ */
+
+
+var jsonToUrlString = function jsonToUrlString(dataObj) {
+  if (Object.prototype.toString.call(dataObj) != "[object Object]") {
+    console.log('invalid param type, expected object.');
+    return '';
+  }
+
+  var arr = [];
+
+  for (var i in dataObj) {
+    arr.push(i + '=' + encodeURIComponent(dataObj[i]));
+  }
+
+  return arr.join('&');
+};
+/**
+ * 图片打点发送数据
+ * @param {*} baseUrl 
+ * @param {*} data  
+ */
+
+
+var imgLog = function imgLog(baseUrl, data) {
+  if (data && Object.prototype.toString.call(data) != "[object Object]") {
+    console.log('invalid param type, expected object.');
+    return;
+  }
+
+  ;
+  wx.getImageInfo({
+    src: baseUrl + '?' + jsonToUrlString(data),
+    success: function success(res) {
+      console.log('性能数据上报成功', res);
+    }
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  init: init,
+  start: start,
+  send: send
+});
+
+/***/ }),
+
+/***/ "./src/version.js":
+/*!************************!*\
+  !*** ./src/version.js ***!
+  \************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * version 是用来比较两个版本号的方法
+ * 
+ */
+
+/**
+ * 比较大
+ */
+function greater(v1, v2) {
+  if (v1 > v2) {
+    return true;
+  }
+
+  return false;
+}
+/**
+ * 比较小
+ */
+
+
+function smaller(v1, v2) {
+  if (v1 < v2) {
+    return true;
+  }
+
+  return false;
+}
+/**
+ * 相等
+ */
+
+
+function equal(v1, v2) {
+  if (v1 === v2) {
+    return true;
+  }
+
+  return false;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  greater: greater,
+  smaller: smaller,
+  equal: equal
+});
+
+/***/ }),
+
+/***/ "./src/waterFull.js":
+/*!**************************!*\
+  !*** ./src/waterFull.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * h5实现瀑布流布局
+ * 
+ * todo: 优化代码（修复bug），实现屏幕大小改变的时候瀑布流自适应
+ */
+var heightArr = [];
+
+function createWaterFull(root, src, index, configs) {
+  var div = document.createElement('div');
+  div.classList.add('item');
+  div.style.position = 'absolute';
+  div.style.width = configs.width + 'px';
+  var img = document.createElement('img');
+  img.src = src;
+  img.style.width = '100%';
+
+  img.onload = function () {
+    var height = img.clientHeight;
+
+    if (index < configs.column) {
+      div.style.top = '0px';
+      heightArr.push(height);
+    } else {
+      var minV = getMin(heightArr);
+      var minIndex = heightArr.indexOf(minV);
+      index = minIndex;
+      div.style.top = configs.diffY + minV + 'px';
+      heightArr[minIndex] = minV + height + configs.diffY;
+    }
+
+    div.style.left = (configs.width + configs.diffX) * index + 'px';
+  };
+
+  img.classList.add('item-img');
+  img.classList.add('img' + index);
+  div.appendChild(img);
+  root.appendChild(div);
+}
+
+function getMin(arr) {
+  return Math.min.apply(null, arr);
+}
+
+function init(id, datas, config) {
+  var root = document.querySelector('#' + id);
+  root.style.position = 'relative';
+  root.style.width = '100%';
+  root.style.height = '100%';
+  datas.map(function (item, index) {
+    createWaterFull(root, item, index, config);
+  });
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  init: init
 });
 
 /***/ })

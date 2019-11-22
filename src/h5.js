@@ -76,7 +76,7 @@ function getWindowHeight() {
     return windowHeight;
 }
 
-function onReachBottom(callback, dom, offset) {
+function onReachBottom(dom, callback, offset) {
     let node = dom ? dom : window;
     offset = offset ? offset : 0;
     node.onscroll = () => {
@@ -92,5 +92,4 @@ function onReachBottom(callback, dom, offset) {
 
 export default {
     onReachBottom,
-    
 }

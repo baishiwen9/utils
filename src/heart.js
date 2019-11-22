@@ -22,7 +22,7 @@ const iconSVG = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W
 function initIcon (x, y) {
     let div = document.createElement('div');
     div.classList.add('icon-heart');
-    const id = 'dom_' + getId();
+    const id = 'heart_' + getId();
     div.id = id;
     div = addStyle(div, x, y);
     let wrap = document.createElement('div');
@@ -83,11 +83,11 @@ function stop() {
 function restart() {
     config.canClick = true;
 }
-//定时清除多余dom，防止由于dom过多导致浏览器奔溃
+//定时清除多余dom，防止由于dom过多导致浏览器崩溃
 function clearDom(id) {
     const node = document.querySelector('#' + id);
     setTimeout(() => {
-        node && node.remove()
+        node && node.remove();
     }, 5000);
 }
 

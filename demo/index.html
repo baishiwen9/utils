@@ -8,13 +8,100 @@
   </head>
   <script src='./../dist/utils.min.js'></script>
   <body>
-      <div id="root">
-          
-      </div>
+      <div id="root"></div>
       <script>
           console.log(Utils);
           Utils.Debug.open();
           Utils.Heart.start();
+
+
+          const images = [
+                'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=4256474966,2292281373&fm=26&gp=0.jpg',
+                'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3717083495,2049140391&fm=26&gp=0.jpg',
+                'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3207309264,2197583591&fm=26&gp=0.jpg',
+                'https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2300875363,445064071&fm=5',
+                'https://ss0.baidu.com/73x1bjeh1BF3odCf/it/u=2086869928,3196158198&fm=85&s=B220EEA60E4002C6501B7C3D0300E05A',
+                'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1039495642,2969284440&fm=26&gp=0.jpg',
+                'https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2038406380,317017081&fm=5',
+                'https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2984967009,1714293888&fm=85&app=57&f=JPEG?w=121&h=75&s=97A602AA0CD2C6D01A0733AD03007008',
+                'https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2300875363,445064071&fm=5',
+                'https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=598069525,3705173246&fm=5',
+                'https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2152435263,329091142&fm=5',
+                'https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=620185774,165030302&fm=5',
+        ];
+
+        Utils.WaterFull.init('root', images, {
+            column: 3,
+            diffX: 10,
+            diffY: 10,
+            width: 140,
+        });
+
+        Utils.H5.onReachBottom(null, function () {
+
+        });
+
+
+        const indexedDB = Utils.IndexedDB.createIndexedDB({
+            databaseName: 'bar',
+            version: 1,
+            table_name: 'user',
+            main_key: 'id',
+            table_header: [
+                {key: 'name', unique: false},
+                {key: 'sex', unique: false},
+                {key: 'address', unique: false},
+                {key: 'phonenumber', unique: false},
+                {key: 'age', unique: false}
+            ],
+            success: () => {
+                indexedDB && indexedDB.add({
+                    table_name: 'user',
+                    data: [
+                        // {id: 1, name: 'test1', sex: '男', address: '北京市', phonenumber: '11111111111', age: '20'},
+                        // {id: 2, name: 'test2', sex: '男', address: '北京市', phonenumber: '22222222222', age: '25'},
+                        {id: 3, name: 'test3', sex: '男', address: '北京市', phonenumber: '33333333333', age: '25'},
+                        {id: 4, name: 'test4', sex: '男', address: '北京市', phonenumber: '44444444444', age: '25'},
+                        {id: 5, name: 'test5', sex: '男', address: '北京市', phonenumber: '55555555555', age: '25'},
+                    ],
+                    callback: (res) => {
+                        console.log(res);
+                    }
+                });
+
+                indexedDB.get({
+                    table_name: 'user',
+                    index_key: '',
+                    index_value: '',
+                    callback: (res) => {
+                        console.log(res)
+                    }
+                });
+
+                indexedDB.update({
+                    table_name: 'user',
+                    data: [
+                        {id: 5, name: 'test5', sex: '女', address: '北京市-海淀区', phonenumber: '55555555555', age: '25'}
+                    ],
+                    callback: (res) => {
+                        console.log(res);
+                    }
+
+                });
+
+                indexedDB.delete({
+                    table_name: 'user',
+                    ids: [3,5],
+                    callback: (res) => {
+                        console.log(res);
+                    }
+                });
+
+                // indexedDB.clear('user');
+                // indexedDB.remove('user');
+            }
+        });
+        
       </script>
   </body>
 </html>
