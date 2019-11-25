@@ -17,13 +17,13 @@
 
 
  const createIndexedDB = (config) => {
-    const {databaseName, version, success} = config;
+    const {databaseName, version, success, fail} = config;
     const request = window.indexedDB.open(databaseName, version);
     let db = '';
 
     request.onerror = (e) => {
         console.log('数据库打开失败');
-        config.fail && config.fail({
+        fail && fail({
             msg: '数据库打开失败',
             e: e,
         })
@@ -101,6 +101,8 @@
                 data.length > 0 && data.map(item => {
                     _request = store.add(item);
                 })
+            } else if (Object.prototype.toString.call(data) === '[object Object]') {
+                _request = store.add(data);
             }
             
             _request.onsuccess = function (event) {
@@ -223,6 +225,8 @@
                 data.length > 0 && data.map(item => {
                     request = objectStore.put(item);
                 })
+            } else if (Object.prototype.toString.call(data) === '[object Object]') {
+                request = objectStore.put(data);
             }
 
             request.onsuccess = function (event) {
@@ -268,6 +272,7 @@
             } else {
                 request = objectStore.delete(ids);
             }
+
             request.onsuccess = function (event) {
                 console.log('数据删除成功');
                 callback && callback({
@@ -284,11 +289,13 @@
                 })
             }
         },
+
         clear: (table_name) => {
             const transaction = db.transaction(table_name, 'readwrite');
             const store = transaction.objectStore(table_name);
             store.clear();
         },
+        
         remove: (table_name) => {
             const transaction = db.transaction(table_name, 'versionchange');
             db.deleteObjectStore(table_name);

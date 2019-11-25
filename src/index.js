@@ -1,3 +1,4 @@
+import './utils/polyfill';
 import Version from './version';
 import H5 from './h5';
 import Common from './common';
@@ -8,6 +9,7 @@ import LocalStorage from './localStorage';
 import MiniAppPerformance from './mini-performance';
 import Cookies from './cookies';
 import IndexedDB from './indexedDB';
+import Comp from './component/index';
 
 
 export default {
@@ -21,4 +23,5 @@ export default {
     MiniAppPerformance,
     Cookies,
     IndexedDB,
+    Comp,
 }

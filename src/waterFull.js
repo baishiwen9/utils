@@ -46,7 +46,7 @@ function init(id, datas, config) {
     const root = document.querySelector('#'+id);
     root.style.position = 'relative';
     root.style.width = '100%';
-    root.style.height = '100%';
+    root.style.height = innerHeight + 'px';
     datas.map((item, index) => {
 		createWaterFull(root, item, index, config);
 	});

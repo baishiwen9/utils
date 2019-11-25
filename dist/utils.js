@@ -550,6 +550,214 @@ function getCurMonthDays() {
 
 /***/ }),
 
+/***/ "./src/component/index.js":
+/*!********************************!*\
+  !*** ./src/component/index.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _seal_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./seal/index */ "./src/component/seal/index.js");
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  Seal: _seal_index__WEBPACK_IMPORTED_MODULE_0__["default"]
+});
+
+/***/ }),
+
+/***/ "./src/component/seal/index.js":
+/*!*************************************!*\
+  !*** ./src/component/seal/index.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * 印章组件
+ * type： 方印，圆印
+ */
+function init(configs) {
+  var _configs$type = configs.type,
+      type = _configs$type === void 0 ? 'square' : _configs$type;
+
+  if (type === 'square') {
+    createSquareSeal(configs, true);
+  } else if ('rectangle' === type) {
+    createRectangleSeal(configs);
+  } else if (type === 'circular') {
+    createCircularSeal(configs);
+  }
+}
+/**
+ * 生成方形印章
+ */
+
+
+function createSquareSeal(configs, isSquare) {
+  configs = configs ? configs : {};
+  var div = document.createElement('div');
+  div.classList.add('seal-wrap');
+  var defaultStyle = {
+    border: '4px solid red',
+    background: 'transparent',
+    borderRadius: '4px',
+    lineHeight: 1,
+    fontSize: '20px',
+    textAlign: 'center',
+    color: 'red',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    writingMode: 'tb-rl'
+  };
+  var style = Object.assign(defaultStyle, configs.style ? configs.style : {});
+
+  for (var key in style) {
+    div.style[key] = style[key];
+  }
+
+  if (isSquare) {
+    div.style.width = div.style.height = configs.size ? configs.size + 'px' : '50px';
+  }
+
+  div.innerText = configs.text ? configs.text : '天下太平';
+  document.body.appendChild(div);
+}
+/**
+ * 生成长方形印章
+ * @param {*} configs 
+ */
+
+
+function createRectangleSeal(configs) {
+  configs.style.width = configs.width ? configs.width : '100px';
+  configs.style.height = configs.height ? configs.height : '40px';
+  configs.style.writingMode = 'initial';
+  createSquareSeal(configs, false);
+}
+/**
+ * 生成圆形印章
+ * @param {*} configs 
+ */
+
+
+function createCircularSeal(configs) {
+  var canvas = document.createElement('canvas');
+  canvas.height = canvas.width = configs.size ? configs.size : '400';
+  var context = canvas.getContext('2d');
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, configs.size, configs.size); // 绘制印章边框   
+
+  var width = canvas.width / 2;
+  var height = canvas.height / 2;
+  context.lineWidth = 4;
+  context.strokeStyle = "#f00";
+  context.beginPath(); //创建弧/曲线（用于创建圆形或部分圆）
+  //context.arc(x,y,r,sAngle,eAngle,counterclockwise);
+  //x,y: 圆心坐标， r：半径，sAngle，eAngle 起始和结束角度（弧度），counterclockwise规定应该逆时针还是顺时针绘图。False = 顺时针，true = 逆时针。
+
+  context.arc(width, height, configs.r, 0, Math.PI * 2); //宽、高、半径
+  // 绘制已定义的路径
+
+  context.stroke();
+  create5star(context, width, height, 20, "#f00", 0); //绘制印章名称   
+
+  context.font = '8px 宋体';
+  context.textBaseline = 'middle'; //设置文本的垂直对齐方式
+
+  context.textAlign = 'center'; //设置文本的水平对对齐方式
+
+  context.lineWidth = 1;
+  context.fillStyle = '#f00';
+  context.save();
+  context.translate(width, height + 60); // 平移到此位置,
+
+  context.scale(1, 1.8); //伸缩要先把远点平移到要写字的位置，然后在绘制文字
+
+  context.fillText(configs.text, 0, 0); //原点已经移动
+
+  context.restore(); // 绘制印章单位   
+
+  context.translate(width, height); // 平移到此位置,
+
+  context.font = '16px 宋体';
+  var count = configs.title.length; // 字数
+
+  var angle = 4 * Math.PI / (3 * (count - 1)); // 字间角度   
+
+  var chars = configs.title.split("");
+  var c;
+
+  for (var i = 0; i < count; i++) {
+    c = chars[i]; // 需要绘制的字符 
+    //绕canvas的画布圆心旋转  
+
+    if (i == 0) {
+      context.rotate(5 * Math.PI / 6);
+    } else {
+      context.rotate(angle);
+    }
+
+    context.save();
+    context.translate(60, 0); // 平移到此位置,此时字和x轴垂直，公司名称和最外圈的距离
+
+    context.rotate(Math.PI / 2); // 旋转90度,让字平行于x轴
+
+    context.scale(1, 1.8); //伸缩画布，实现文字的拉长
+
+    context.fillText(c, 0, 0); // 此点为字的中心点
+
+    context.restore();
+  } // 设置画布为最初的位置为原点，旋转回平衡的原位置，用于清除画布
+
+
+  context.rotate(-Math.PI / 6);
+  context.translate(0 - canvas.width / 2, 0 - canvas.height / 2);
+  document.body.appendChild(canvas);
+} //绘制五角星  
+
+/** 
+ * 创建一个五角星形状. 该五角星的中心坐标为(sx,sy),中心到顶点的距离为radius,rotate=0时一个顶点在对称轴上 
+ * rotate:绕对称轴旋转rotate弧度 
+ */
+
+
+function create5star(context, sx, sy, radius, color, rotato) {
+  context.save();
+  context.fillStyle = color;
+  context.translate(sx, sy); //移动坐标原点
+
+  context.rotate(Math.PI + rotato); //旋转
+
+  context.beginPath(); //创建路径
+
+  var x = Math.sin(0),
+      y = Math.cos(0),
+      dig = Math.PI / 5 * 4;
+
+  for (var i = 0; i < 5; i++) {
+    //画五角星的五条边
+    x = Math.sin(i * dig);
+    y = Math.cos(i * dig);
+    context.lineTo(x * radius, y * radius);
+  }
+
+  context.closePath();
+  context.stroke();
+  context.fill();
+  context.restore();
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  init: init
+});
+
+/***/ }),
+
 /***/ "./src/cookies.js":
 /*!************************!*\
   !*** ./src/cookies.js ***!
@@ -933,16 +1141,21 @@ function clearDom(id) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _version__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./version */ "./src/version.js");
-/* harmony import */ var _h5__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./h5 */ "./src/h5.js");
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./common */ "./src/common.js");
-/* harmony import */ var _debug__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./debug */ "./src/debug.js");
-/* harmony import */ var _heart__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./heart */ "./src/heart.js");
-/* harmony import */ var _waterFull__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./waterFull */ "./src/waterFull.js");
-/* harmony import */ var _localStorage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./localStorage */ "./src/localStorage.js");
-/* harmony import */ var _mini_performance__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./mini-performance */ "./src/mini-performance.js");
-/* harmony import */ var _cookies__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./cookies */ "./src/cookies.js");
-/* harmony import */ var _indexedDB__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./indexedDB */ "./src/indexedDB.js");
+/* harmony import */ var _utils_polyfill__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/polyfill */ "./src/utils/polyfill.js");
+/* harmony import */ var _utils_polyfill__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils_polyfill__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _version__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./version */ "./src/version.js");
+/* harmony import */ var _h5__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./h5 */ "./src/h5.js");
+/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./common */ "./src/common.js");
+/* harmony import */ var _debug__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./debug */ "./src/debug.js");
+/* harmony import */ var _heart__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./heart */ "./src/heart.js");
+/* harmony import */ var _waterFull__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./waterFull */ "./src/waterFull.js");
+/* harmony import */ var _localStorage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./localStorage */ "./src/localStorage.js");
+/* harmony import */ var _mini_performance__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./mini-performance */ "./src/mini-performance.js");
+/* harmony import */ var _cookies__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./cookies */ "./src/cookies.js");
+/* harmony import */ var _indexedDB__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./indexedDB */ "./src/indexedDB.js");
+/* harmony import */ var _component_index__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./component/index */ "./src/component/index.js");
+
+
 
 
 
@@ -954,16 +1167,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  Version: _version__WEBPACK_IMPORTED_MODULE_0__["default"],
-  H5: _h5__WEBPACK_IMPORTED_MODULE_1__["default"],
-  Common: _common__WEBPACK_IMPORTED_MODULE_2__["default"],
-  Debug: _debug__WEBPACK_IMPORTED_MODULE_3__["default"],
-  Heart: _heart__WEBPACK_IMPORTED_MODULE_4__["default"],
-  WaterFull: _waterFull__WEBPACK_IMPORTED_MODULE_5__["default"],
-  LocalStorage: _localStorage__WEBPACK_IMPORTED_MODULE_6__["default"],
-  MiniAppPerformance: _mini_performance__WEBPACK_IMPORTED_MODULE_7__["default"],
-  Cookies: _cookies__WEBPACK_IMPORTED_MODULE_8__["default"],
-  IndexedDB: _indexedDB__WEBPACK_IMPORTED_MODULE_9__["default"]
+  Version: _version__WEBPACK_IMPORTED_MODULE_1__["default"],
+  H5: _h5__WEBPACK_IMPORTED_MODULE_2__["default"],
+  Common: _common__WEBPACK_IMPORTED_MODULE_3__["default"],
+  Debug: _debug__WEBPACK_IMPORTED_MODULE_4__["default"],
+  Heart: _heart__WEBPACK_IMPORTED_MODULE_5__["default"],
+  WaterFull: _waterFull__WEBPACK_IMPORTED_MODULE_6__["default"],
+  LocalStorage: _localStorage__WEBPACK_IMPORTED_MODULE_7__["default"],
+  MiniAppPerformance: _mini_performance__WEBPACK_IMPORTED_MODULE_8__["default"],
+  Cookies: _cookies__WEBPACK_IMPORTED_MODULE_9__["default"],
+  IndexedDB: _indexedDB__WEBPACK_IMPORTED_MODULE_10__["default"],
+  Comp: _component_index__WEBPACK_IMPORTED_MODULE_11__["default"]
 });
 
 /***/ }),
@@ -996,13 +1210,14 @@ __webpack_require__.r(__webpack_exports__);
 var createIndexedDB = function createIndexedDB(config) {
   var databaseName = config.databaseName,
       version = config.version,
-      success = config.success;
+      success = config.success,
+      fail = config.fail;
   var request = window.indexedDB.open(databaseName, version);
   var db = '';
 
   request.onerror = function (e) {
     console.log('数据库打开失败');
-    config.fail && config.fail({
+    fail && fail({
       msg: '数据库打开失败',
       e: e
     });
@@ -1088,6 +1303,8 @@ var createIndexedDB = function createIndexedDB(config) {
         data.length > 0 && data.map(function (item) {
           _request = store.add(item);
         });
+      } else if (Object.prototype.toString.call(data) === '[object Object]') {
+        _request = store.add(data);
       }
 
       _request.onsuccess = function (event) {
@@ -1218,6 +1435,8 @@ var createIndexedDB = function createIndexedDB(config) {
         data.length > 0 && data.map(function (item) {
           request = objectStore.put(item);
         });
+      } else if (Object.prototype.toString.call(data) === '[object Object]') {
+        request = objectStore.put(data);
       }
 
       request.onsuccess = function (event) {
@@ -1562,6 +1781,53 @@ var imgLog = function imgLog(baseUrl, data) {
 
 /***/ }),
 
+/***/ "./src/utils/polyfill.js":
+/*!*******************************!*\
+  !*** ./src/utils/polyfill.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+if (typeof Object.assign != 'function') {
+  // Must be writable: true, enumerable: false, configurable: true
+  Object.defineProperty(Object, "assign", {
+    value: function assign(target
+    /*, varArgs*/
+    ) {
+      // .length of function is 2
+      'use strict';
+
+      if (target == null) {
+        // TypeError if undefined or null
+        throw new TypeError('Cannot convert undefined or null to object');
+      }
+
+      var to = Object(target);
+
+      for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+
+        if (nextSource != null) {
+          // Skip over if undefined or null
+          for (var nextKey in nextSource) {
+            // Avoid bugs when hasOwnProperty is shadowed
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+              to[nextKey] = nextSource[nextKey];
+            }
+          }
+        }
+      }
+
+      return to;
+    },
+    writable: true,
+    configurable: true
+  });
+}
+
+/***/ }),
+
 /***/ "./src/version.js":
 /*!************************!*\
   !*** ./src/version.js ***!
@@ -1675,7 +1941,7 @@ function init(id, datas, config) {
   var root = document.querySelector('#' + id);
   root.style.position = 'relative';
   root.style.width = '100%';
-  root.style.height = '100%';
+  root.style.height = innerHeight + 'px';
   datas.map(function (item, index) {
     createWaterFull(root, item, index, config);
   });

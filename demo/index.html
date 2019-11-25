@@ -8,7 +8,8 @@
   </head>
   <script src='./../dist/utils.min.js'></script>
   <body>
-      <div id="root"></div>
+      <div id="root">
+      </div>
       <script>
           console.log(Utils);
           Utils.Debug.open();
@@ -101,6 +102,38 @@
                 // indexedDB.remove('user');
             }
         });
+        
+      </script>
+
+      <script>
+        //   印章测试
+        //正方形印章
+        Utils.Comp.Seal.init({
+            text: '王小明印',
+            size: '50',
+            style: {},
+            type: 'square',
+        });
+
+        //长方形印章
+        Utils.Comp.Seal.init({
+            text: '王小明印',
+            size: '50',
+            style: {},
+            type: 'rectangle',
+        });
+
+        //圆形印章
+        Utils.Comp.Seal.init({
+            text: '王小明印',
+            size: '180',
+            r: '80',
+            title: '北京网络科学技术有限公司',
+            text: '前端技术委员会',
+            style: {},
+            type: 'circular',
+        });
+
         
       </script>
   </body>
