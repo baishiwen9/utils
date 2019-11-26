@@ -3,7 +3,7 @@
  * type： 方印，圆印
  */
 
- function init(configs) {
+export default function initSeal(configs) {
     const {type='square'} = configs;
     if (type === 'square') {
         createSquareSeal(configs, true);
@@ -149,9 +149,3 @@ function create5star(context, sx, sy, radius, color, rotato) {
     context.restore();
 }
 
-
-
-
- export default {
-     init,
- }
