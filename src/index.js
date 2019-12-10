@@ -1,3 +1,4 @@
+import './../node_modules/babel-polyfill/dist/polyfill.min.js';
 import './utils/polyfill';
 import Version from './version';
 import H5 from './h5';
@@ -10,7 +11,8 @@ import MiniAppPerformance from './mini-performance';
 import Cookies from './cookies';
 import IndexedDB from './indexedDB';
 import Comp from './component/index';
-
+import History from './history';
+import Array from './array';
 
 export default {
     Version,
@@ -24,4 +26,6 @@ export default {
     Cookies,
     IndexedDB,
     Comp,
+    History,
+    Array
 }

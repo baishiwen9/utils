@@ -28,3 +28,24 @@ if (typeof Object.assign != 'function') {
         configurable: true
     });
 }
+
+// 为了兼容所有浏览器，以下为onhashchange的polyfill:
+(function (window){
+    if ('onhashchange' in window) { return; };
+    let location = window.location,
+    oldURL = location.href,
+    oldHash = location.hash;
+
+    setInterval(function() {
+        let newURL = location.href, newHash = location.hash
+        if (newHash != oldHash && typeof window.onhashchange === 'function') {     
+        window.onhashchange({
+            type: 'hashchange',
+            oldURL: oldURL,
+            newURL: newURL
+        });
+        oldURL = newURL
+        oldHash = newHash
+        }
+    }, 100);
+ })(window);

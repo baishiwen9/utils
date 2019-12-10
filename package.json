@@ -9,6 +9,7 @@
     "@babel/preset-env": "^7.2.0",
     "babel": "^6.23.0",
     "babel-loader": "^8.0.4",
+    "babel-polyfill": "^6.26.0",
     "lodash": "^4.17.11",
     "tocmd": "^1.0.1"
   },
