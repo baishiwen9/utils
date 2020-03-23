@@ -5,14 +5,27 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
       <meta name="theme-color" content="#000000">
       <title>demo</title>
+      <style>
+          h1{
+              background-color: #ffffff;
+              position: relative;
+              text-align: center;
+              z-index: 2;
+          }
+          #root{
+              position: relative;
+              overflow: hidden;
+          }
+      </style>
   </head>
   <script src='./../dist/utils.min.js'></script>
   <body>
+      <h1>测试区域---demo</h1>
       <div id="root">
       </div>
       <script>
           console.log(Utils);
-          Utils.Debug.open();
+          Utils.Debug();
           Utils.Heart.start();
 
 
@@ -134,7 +147,14 @@
             type: 'circular',
         });
 
-        
+        Utils.H5.pullDownRefresh.init({
+            root: '#root',
+        });
+
+        Utils.H5.scrollStop(function(){
+            console.log('滚动停止了啊啊啊啊啊啊');
+        });
+
       </script>
   </body>
 </html>

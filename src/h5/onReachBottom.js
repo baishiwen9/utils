@@ -90,6 +90,7 @@ function onReachBottom(dom, callback, offset) {
 }
 
 
-export default {
+
+export  {
     onReachBottom,
 }

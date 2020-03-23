@@ -1,7 +1,7 @@
 import './../node_modules/babel-polyfill/dist/polyfill.min.js';
 import './utils/polyfill';
 import Version from './version';
-import H5 from './h5';
+import H5 from './h5/index';
 import Common from './common';
 import Debug from './debug';
 import Heart from './heart';
@@ -13,6 +13,10 @@ import IndexedDB from './indexedDB';
 import Comp from './component/index';
 import History from './history';
 import Array from './array';
+import Sort from './sort';
+import system from './system';
+
+
 
 export default {
     Version,
@@ -27,5 +31,7 @@ export default {
     IndexedDB,
     Comp,
     History,
-    Array
+    Array,
+    Sort,
+    system,
 }
